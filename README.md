@@ -62,15 +62,7 @@ for block in blockchain.get_ordered_blocks(os.path.expanduser('~/.bitcoin/blocks
 
 ## Installing
 
-Requirements : python-bitcoinlib, plyvel, coverage for tests
-
-plyvel requires leveldb development libraries for LevelDB >1.2.X
-
-On Linux, install libleveldb-dev
-
-```
-sudo apt-get install libleveldb-dev
-```
+Requirements : python-bitcoinlib, coverage for tests
 
 Then, just run
 ```
