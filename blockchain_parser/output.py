@@ -9,6 +9,7 @@
 # modified, propagated, or distributed except according to the terms contained
 # in the LICENSE file.
 
+from bitcoin.core.script import CScriptTruncatedPushDataError, CScriptInvalidError
 from .utils import decode_varint, decode_uint64
 from .script import Script
 from .address import Address
@@ -95,19 +96,26 @@ class Output(object):
     @property
     def type(self):
         """Returns the output's script type as a string"""
-        if self.is_pubkeyhash():
-            return "pubkeyhash"
+        try:
+            if self.is_pubkeyhash():
+                return "pubkeyhash"
 
-        if self.is_pubkey():
-            return "pubkey"
+            if self.is_pubkey():
+                return "pubkey"
 
-        if self.is_p2sh():
-            return "p2sh"
+            if self.is_p2sh():
+                return "p2sh"
 
-        if self.is_multisig():
-            return "multisig"
+            if self.is_multisig():
+                return "multisig"
 
-        if self.is_return():
-            return "OP_RETURN"
+            if self.is_return():
+                return "OP_RETURN"
+
+        except (CScriptTruncatedPushDataError, CScriptInvalidError) as e:
+            # avoid crash on block 000000000000000b7e48f88e86ceee3e97b4df7c139f5411d14735c1b3c36791
+            # because the outputs of tx ebc9fa1196a59e192352d76c0f6e73167046b9d37b8302b6bb6968dfd279b767
+            # are not decodable
+            return 'undecodable'
 
         return "unknown"
